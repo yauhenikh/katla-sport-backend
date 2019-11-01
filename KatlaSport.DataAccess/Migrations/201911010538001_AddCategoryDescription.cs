@@ -3,7 +3,7 @@ using System.Data.Entity.Migrations;
 namespace KatlaSport.DataAccess.Migrations
 {
     /// <summary>
-    /// Add category description migration
+    /// Add category description migration.
     /// </summary>
     public partial class AddCategoryDescription : DbMigration
     {
