@@ -5,6 +5,7 @@ using KatlaSport.DataAccess.CustomerCatalogue;
 using KatlaSport.DataAccess.ProductCatalogue;
 using KatlaSport.DataAccess.ProductStore;
 using KatlaSport.DataAccess.ProductStoreHive;
+using KatlaSport.DataAccess.StaffCatalogue;
 
 namespace KatlaSport.DataAccess.Migrations
 {
@@ -346,21 +347,21 @@ namespace KatlaSport.DataAccess.Migrations
                 },
                 new StoreItem // #4
                 {
-                    Id = 13,
+                    Id = 10,
                     Quantity = 4,
                     HiveSectionId = 2,
                     ProductId = 4
                 },
                 new StoreItem
                 {
-                    Id = 14,
+                    Id = 11,
                     Quantity = 0,
                     HiveSectionId = 4,
                     ProductId = 4
                 },
                 new StoreItem
                 {
-                    Id = 15,
+                    Id = 12,
                     Quantity = 0,
                     HiveSectionId = 6,
                     ProductId = 4
@@ -395,6 +396,138 @@ namespace KatlaSport.DataAccess.Migrations
                     Name = "Alexander Alexandrov",
                     Address = "Brest, Repina-7",
                     Phone = "+37529-9832872"
+                });
+
+            context.Positions.AddOrUpdate(
+                i => i.Id,
+                new Position
+                {
+                    Id = 1,
+                    Name = "Head of department"
+                },
+                new Position
+                {
+                    Id = 2,
+                    Name = "Developer"
+                },
+                new Position
+                {
+                    Id = 3,
+                    Name = "Manager"
+                });
+
+            context.Locations.AddOrUpdate(
+                i => i.Id,
+                new Location
+                {
+                    Id = 1,
+                    Name = "MK11",
+                    Country = "Belarus",
+                    Address = "Minsk, Kuprevicha 1-1",
+                    PostalCode = "220141"
+                },
+                new Location
+                {
+                    Id = 2,
+                    Name = "ZL11",
+                    Country = "Belarus",
+                    Address = "Zhodino, Lenina 11",
+                    PostalCode = "222160"
+                });
+
+            context.Departments.AddOrUpdate(
+                i => i.Id,
+                new Department
+                {
+                    Id = 1,
+                    Name = "Development",
+                    Phone = "+221311231",
+                    LocationId = 1
+                },
+                new Department
+                {
+                    Id = 2,
+                    Name = "Sales",
+                    Phone = "+1773213",
+                    LocationId = 1
+                });
+
+            context.Employees.AddOrUpdate(
+                i => i.Id,
+                new Employee
+                {
+                    Id = 1,
+                    FirstName = "Quentin",
+                    LastName = "Tarantino",
+                    BirthDate = new DateTime(1963, 3, 27),
+                    HireDate = new DateTime(2019, 10, 10),
+                    Address = "USA, NY, Jackon 5-4",
+                    Salary = 1000m,
+                    PositionId = 1,
+                    DepartmentId = 1
+                },
+                new Employee
+                {
+                    Id = 2,
+                    FirstName = "Brad",
+                    LastName = "Pitt",
+                    BirthDate = new DateTime(1963, 12, 18),
+                    HireDate = new DateTime(2019, 11, 11),
+                    Address = "USA, LA, Nelson 15-24",
+                    Salary = 500m,
+                    ReportsToId = 1,
+                    PositionId = 2,
+                    DepartmentId = 1
+                },
+                new Employee
+                {
+                    Id = 3,
+                    FirstName = "Leonardo",
+                    LastName = "DiCaprio",
+                    BirthDate = new DateTime(1974, 11, 11),
+                    HireDate = new DateTime(2019, 11, 11),
+                    Address = "USA, SF, Beatles 15-24",
+                    Salary = 500m,
+                    ReportsToId = 1,
+                    PositionId = 2,
+                    DepartmentId = 1
+                },
+                new Employee
+                {
+                    Id = 4,
+                    FirstName = "Bruce",
+                    LastName = "Willis",
+                    BirthDate = new DateTime(1955, 3, 19),
+                    HireDate = new DateTime(2010, 1, 10),
+                    EndDate = new DateTime(2019, 11, 11),
+                    Address = "USA, SF, Beatles 15-24",
+                    Salary = 1500m,
+                    PositionId = 3,
+                    DepartmentId = 2
+                });
+
+            context.Documents.AddOrUpdate(
+                i => i.Id,
+                new Document
+                {
+                    Id = 1,
+                    FileName = "pitt_passport.pdf",
+                    Title = "Pitt's Passport Copy",
+                    EmployeeId = 2
+                },
+                new Document
+                {
+                    Id = 2,
+                    FileName = "pitt_photo.jpg",
+                    Title = "Pitt's Photo",
+                    EmployeeId = 2
+                },
+                new Document
+                {
+                    Id = 3,
+                    FileName = "dicaprio_mil_id.tiff",
+                    Title = "DiCaprio's Military Id Copy",
+                    EmployeeId = 3
                 });
         }
     }
