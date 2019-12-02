@@ -18,12 +18,12 @@ namespace KatlaSport.WebApi.Controllers
     [SwaggerResponseRemoveDefaults]
     public class LocationsController : ApiController
     {
-        private readonly ILocationService _locationService;
+        private readonly ILocationRepository _locationRepository;
         private readonly IDepartmentService _departmentService;
 
-        public LocationsController(ILocationService locationService, IDepartmentService departmentService)
+        public LocationsController(ILocationRepository locationRepository, IDepartmentService departmentService)
         {
-            _locationService = locationService ?? throw new ArgumentNullException(nameof(locationService));
+            _locationRepository = locationRepository ?? throw new ArgumentNullException(nameof(locationRepository));
             _departmentService = departmentService ?? throw new ArgumentNullException(nameof(departmentService));
         }
 
@@ -33,7 +33,7 @@ namespace KatlaSport.WebApi.Controllers
         [SwaggerResponse(HttpStatusCode.InternalServerError)]
         public async Task<IHttpActionResult> GetLocations()
         {
-            var locations = await _locationService.GetLocationsAsync();
+            var locations = await _locationRepository.GetLocationsAsync();
             return Ok(locations);
         }
 
@@ -44,7 +44,7 @@ namespace KatlaSport.WebApi.Controllers
         [SwaggerResponse(HttpStatusCode.InternalServerError)]
         public async Task<IHttpActionResult> GetLocation(int locationId)
         {
-            var location = await _locationService.GetLocationAsync(locationId);
+            var location = await _locationRepository.GetLocationAsync(locationId);
             return Ok(location);
         }
 
@@ -72,9 +72,10 @@ namespace KatlaSport.WebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var location = await _locationService.CreateLocationAsync(createRequest);
-            var address = string.Format("/api/locations/{0}", location.Id);
-            return Created<Location>(address, location);
+            await _locationRepository.CreateLocationAsync(createRequest);
+            await _locationRepository.SaveAsync();
+
+            return ResponseMessage(Request.CreateResponse(HttpStatusCode.Created));
         }
 
         [HttpPut]
@@ -91,7 +92,9 @@ namespace KatlaSport.WebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            await _locationService.UpdateLocationAsync(locationId, updateRequest);
+            await _locationRepository.UpdateLocationAsync(locationId, updateRequest);
+            await _locationRepository.SaveAsync();
+
             return ResponseMessage(Request.CreateResponse(HttpStatusCode.NoContent));
         }
 
@@ -104,7 +107,9 @@ namespace KatlaSport.WebApi.Controllers
         [SwaggerResponse(HttpStatusCode.InternalServerError)]
         public async Task<IHttpActionResult> DeleteLocation([FromUri] int locationId)
         {
-            await _locationService.DeleteLocationAsync(locationId);
+            await _locationRepository.DeleteLocationAsync(locationId);
+            await _locationRepository.SaveAsync();
+
             return ResponseMessage(Request.CreateResponse(HttpStatusCode.NoContent));
         }
     }

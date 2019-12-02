@@ -22,6 +22,7 @@ namespace KatlaSport.Services
             builder.RegisterType<StaffManagement.PositionService>().As<StaffManagement.IPositionService>();
             builder.RegisterType<StaffManagement.EmployeeService>().As<StaffManagement.IEmployeeService>();
             builder.RegisterType<StaffManagement.DocumentService>().As<StaffManagement.IDocumentService>();
+            builder.RegisterType<StaffManagement.LocationRepository>().As<StaffManagement.ILocationRepository>();
             builder.RegisterType<UserContext>().As<IUserContext>();
         }
     }
