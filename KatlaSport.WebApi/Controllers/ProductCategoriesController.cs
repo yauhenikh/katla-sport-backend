@@ -120,7 +120,7 @@ namespace KatlaSport.WebApi.Controllers
 
         [HttpGet]
         [Route("{id:int:min(1)}/products")]
-        [SwaggerResponse(HttpStatusCode.OK, Description = "Returns a list of products for requested product category.", Type = typeof(ProductCategoryProductListItem))]
+        [SwaggerResponse(HttpStatusCode.OK, Description = "Returns a list of products for requested product category.", Type = typeof(ProductCategoryProductListItem[]))]
         [SwaggerResponse(HttpStatusCode.NotFound)]
         [SwaggerResponse(HttpStatusCode.InternalServerError)]
         public async Task<IHttpActionResult> GetProducts([FromUri] int id)

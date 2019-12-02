@@ -36,6 +36,13 @@ namespace KatlaSport.Services.StaffManagement
         Task<List<EmployeeListItem>> GetDepartmentEmployeesAsync(int departmentId);
 
         /// <summary>
+        /// Gets a list of subordinate employees for specified employee.
+        /// </summary>
+        /// <param name="employeeId">An employee identifier.</param>
+        /// <returns>A <see cref="Task{List{EmployeeListItem}}"/>.</returns>
+        Task<List<EmployeeListItem>> GetSubordinateEmployeesAsync(int employeeId);
+
+        /// <summary>
         /// Creates a new employee.
         /// </summary>
         /// <param name="createRequest">A <see cref="UpdateEmployeeRequest"/>.</param>

@@ -44,5 +44,10 @@
         /// Gets or sets a document count.
         /// </summary>
         public int DocumentCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets a subordinate count.
+        /// </summary>
+        public int SubordinateCount { get; set; }
     }
 }

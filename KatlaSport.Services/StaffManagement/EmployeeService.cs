@@ -34,6 +34,7 @@ namespace KatlaSport.Services.StaffManagement
             foreach (EmployeeListItem employee in employees)
             {
                 employee.DocumentCount = _context.Documents.Where(d => d.EmployeeId == employee.Id).Count();
+                employee.SubordinateCount = _context.Employees.Where(e => e.ReportsToId == employee.Id).Count();
             }
 
             return employees;
@@ -60,6 +61,7 @@ namespace KatlaSport.Services.StaffManagement
             foreach (EmployeeListItem employee in employees)
             {
                 employee.DocumentCount = _context.Documents.Where(d => d.EmployeeId == employee.Id).Count();
+                employee.SubordinateCount = _context.Employees.Where(e => e.ReportsToId == employee.Id).Count();
             }
 
             return employees;
@@ -74,6 +76,22 @@ namespace KatlaSport.Services.StaffManagement
             foreach (EmployeeListItem employee in employees)
             {
                 employee.DocumentCount = _context.Documents.Where(d => d.EmployeeId == employee.Id).Count();
+                employee.SubordinateCount = _context.Employees.Where(e => e.ReportsToId == employee.Id).Count();
+            }
+
+            return employees;
+        }
+
+        /// <inheritdoc/>
+        public async Task<List<EmployeeListItem>> GetSubordinateEmployeesAsync(int employeeId)
+        {
+            var dbEmployees = await _context.Employees.Where(e => e.ReportsToId == employeeId).OrderBy(e => e.Id).ToArrayAsync();
+            var employees = dbEmployees.Select(e => Mapper.Map<EmployeeListItem>(e)).ToList();
+
+            foreach (EmployeeListItem employee in employees)
+            {
+                employee.DocumentCount = _context.Documents.Where(d => d.EmployeeId == employee.Id).Count();
+                employee.SubordinateCount = _context.Employees.Where(e => e.ReportsToId == employee.Id).Count();
             }
 
             return employees;

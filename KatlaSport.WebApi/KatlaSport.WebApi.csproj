@@ -185,6 +185,7 @@
     <Compile Include="Controllers\HivesController.cs" />
     <Compile Include="Controllers\HiveSectionsController.cs" />
     <Compile Include="Controllers\LocationsController.cs" />
+    <Compile Include="Controllers\PositionsController.cs" />
     <Compile Include="Controllers\ProductCategoriesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProductsController.cs" />

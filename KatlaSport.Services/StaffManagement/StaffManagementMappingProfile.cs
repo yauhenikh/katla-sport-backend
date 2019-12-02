@@ -13,14 +13,19 @@ namespace KatlaSport.Services.StaffManagement
         {
             CreateMap<DataAccessLocation, LocationListItem>();
             CreateMap<DataAccessLocation, Location>();
+            CreateMap<UpdateLocationRequest, DataAccessLocation>();
             CreateMap<DataAccessDepartment, DepartmentListItem>();
             CreateMap<DataAccessDepartment, Department>();
+            CreateMap<UpdateDepartmentRequest, DataAccessDepartment>();
             CreateMap<DataAccessPosition, PositionListItem>();
             CreateMap<DataAccessPosition, Position>();
+            CreateMap<UpdatePositionRequest, DataAccessPosition>();
             CreateMap<DataAccessEmployee, EmployeeListItem>();
             CreateMap<DataAccessEmployee, Employee>();
+            CreateMap<UpdateEmployeeRequest, DataAccessEmployee>();
             CreateMap<DataAccessDocument, DocumentListItem>();
             CreateMap<DataAccessDocument, Document>();
+            CreateMap<UpdateDocumentRequest, DataAccessDocument>();
         }
     }
 }
