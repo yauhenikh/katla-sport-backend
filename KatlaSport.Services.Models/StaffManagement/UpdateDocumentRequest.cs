@@ -5,7 +5,7 @@ namespace KatlaSport.Services.StaffManagement
     /// <summary>
     /// Represents a request for creating and updating a document.
     /// </summary>
-    [Validator(typeof(UpdateDepartmentRequestValidator))]
+    [Validator(typeof(UpdateDocumentRequestValidator))]
     public class UpdateDocumentRequest
     {
         /// <summary>
