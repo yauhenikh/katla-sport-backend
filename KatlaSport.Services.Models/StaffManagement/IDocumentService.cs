@@ -36,12 +36,29 @@ namespace KatlaSport.Services.StaffManagement
         Task<Document> CreateDocumentAsync(UpdateDocumentRequest createRequest);
 
         /// <summary>
+        /// Creates a new document with file.
+        /// </summary>
+        /// <param name="createRequest">A <see cref="UpdateDocumentRequest"/>.</param>
+        /// <param name="filePath">A path to a file.</param>
+        /// <returns>A <see cref="Task{Document}"/>.</returns>
+        Task<Document> CreateDocumentWithFileAsync(UpdateDocumentRequest createRequest, string filePath);
+
+        /// <summary>
         /// Updates an existed document.
         /// </summary>
         /// <param name="documentId">A document identifier.</param>
         /// <param name="updateRequest">A <see cref="UpdateDocumentRequest" />.</param>
         /// <returns>A <see cref="Task{Document}"/></returns>
         Task<Document> UpdateDocumentAsync(int documentId, UpdateDocumentRequest updateRequest);
+
+        /// <summary>
+        /// Updates an existed document with file.
+        /// </summary>
+        /// <param name="documentId">A document identifier.</param>
+        /// <param name="updateRequest">A <see cref="UpdateDocumentRequest" />.</param>
+        /// <param name="filePath">A path to a file.</param>
+        /// <returns>A <see cref="Task{Document}"/></returns>
+        Task<Document> UpdateDocumentWithFileAsync(int documentId, UpdateDocumentRequest updateRequest, string filePath);
 
         /// <summary>
         /// Deletes an existed document.

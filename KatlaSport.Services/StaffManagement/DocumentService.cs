@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -67,12 +68,53 @@ namespace KatlaSport.Services.StaffManagement
         }
 
         /// <inheritdoc/>
+        public async Task<Document> CreateDocumentWithFileAsync(UpdateDocumentRequest createRequest, string filePath)
+        {
+            using (var stream = new FileStream(filePath, FileMode.Open))
+            {
+                createRequest.DocumentData = new byte[stream.Length];
+                await stream.ReadAsync(createRequest.DocumentData, 0, createRequest.DocumentData.Length);
+            }
+
+            var dbDocument = Mapper.Map<UpdateDocumentRequest, DbDocument>(createRequest);
+            _context.Documents.Add(dbDocument);
+
+            await _context.SaveChangesAsync();
+
+            return Mapper.Map<Document>(dbDocument);
+        }
+
+        /// <inheritdoc/>
         public async Task<Document> UpdateDocumentAsync(int departmentId, UpdateDocumentRequest updateRequest)
         {
             var dbDocuments = await _context.Documents.Where(d => d.Id == departmentId).ToArrayAsync();
             if (dbDocuments.Length == 0)
             {
                 throw new RequestedResourceNotFoundException();
+            }
+
+            var dbDocument = dbDocuments[0];
+
+            Mapper.Map(updateRequest, dbDocument);
+
+            await _context.SaveChangesAsync();
+
+            return Mapper.Map<Document>(dbDocument);
+        }
+
+        /// <inheritdoc/>
+        public async Task<Document> UpdateDocumentWithFileAsync(int departmentId, UpdateDocumentRequest updateRequest, string filePath)
+        {
+            var dbDocuments = await _context.Documents.Where(d => d.Id == departmentId).ToArrayAsync();
+            if (dbDocuments.Length == 0)
+            {
+                throw new RequestedResourceNotFoundException();
+            }
+
+            using (var stream = new FileStream(filePath, FileMode.Open))
+            {
+                updateRequest.DocumentData = new byte[stream.Length];
+                await stream.ReadAsync(updateRequest.DocumentData, 0, updateRequest.DocumentData.Length);
             }
 
             var dbDocument = dbDocuments[0];

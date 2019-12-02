@@ -64,6 +64,24 @@ namespace KatlaSport.WebApi.Controllers
             return Created<Document>(location, document);
         }
 
+        [HttpPost]
+        [Route("create")]
+        [SwaggerResponse(HttpStatusCode.Created, Description = "Creates a new document with file.")]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Conflict)]
+        [SwaggerResponse(HttpStatusCode.InternalServerError)]
+        public async Task<IHttpActionResult> AddDocumentWithFile([FromBody] UpdateDocumentRequest createRequest, string filePath)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var document = await _documentService.CreateDocumentWithFileAsync(createRequest, filePath);
+            var location = string.Format("/api/documents/{0}", document.Id);
+            return Created<Document>(location, document);
+        }
+
         [HttpPut]
         [Route("{documentId:int:min(1)}")]
         [SwaggerResponse(HttpStatusCode.NoContent, Description = "Updates an existed document.")]
@@ -79,6 +97,24 @@ namespace KatlaSport.WebApi.Controllers
             }
 
             await _documentService.UpdateDocumentAsync(documentId, updateRequest);
+            return ResponseMessage(Request.CreateResponse(HttpStatusCode.NoContent));
+        }
+
+        [HttpPut]
+        [Route("update/{documentId:int:min(1)}")]
+        [SwaggerResponse(HttpStatusCode.NoContent, Description = "Updates an existed document with file.")]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Conflict)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
+        [SwaggerResponse(HttpStatusCode.InternalServerError)]
+        public async Task<IHttpActionResult> UpdateDocumentWithFile([FromUri] int documentId, [FromBody] UpdateDocumentRequest updateRequest, string filePath)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            await _documentService.UpdateDocumentWithFileAsync(documentId, updateRequest, filePath);
             return ResponseMessage(Request.CreateResponse(HttpStatusCode.NoContent));
         }
 
