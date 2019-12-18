@@ -1,4 +1,5 @@
 ﻿using KatlaSport.Services;
+using Microsoft.ApplicationInsights;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -10,7 +11,9 @@ namespace KatlaSport.WebApi.CustomFilters
     {
         public override void OnException(HttpActionExecutedContext context)
         {
-            // TODO Add logging here.
+            TelemetryClient _telemetry = new TelemetryClient();
+            _telemetry.TrackException(context.Exception);
+
             if (context.Exception is RequestedResourceNotFoundException)
             {
                 context.Response = new HttpResponseMessage(HttpStatusCode.NotFound);

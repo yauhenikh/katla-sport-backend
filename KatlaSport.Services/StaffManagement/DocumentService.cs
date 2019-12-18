@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using KatlaSport.DataAccess;
 using KatlaSport.DataAccess.StaffCatalogue;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Auth;
+using Microsoft.WindowsAzure.Storage.Blob;
 using DbDocument = KatlaSport.DataAccess.StaffCatalogue.Document;
 
 namespace KatlaSport.Services.StaffManagement
@@ -70,14 +74,15 @@ namespace KatlaSport.Services.StaffManagement
         /// <inheritdoc/>
         public async Task<Document> CreateDocumentWithFileAsync(UpdateDocumentRequest createRequest, string filePath)
         {
-            using (var stream = new FileStream(filePath, FileMode.Open))
-            {
-                createRequest.DocumentData = new byte[stream.Length];
-                await stream.ReadAsync(createRequest.DocumentData, 0, createRequest.DocumentData.Length);
-            }
-
             var dbDocument = Mapper.Map<UpdateDocumentRequest, DbDocument>(createRequest);
             _context.Documents.Add(dbDocument);
+
+            string fileName = dbDocument.Id + "_" + Path.GetFileName(filePath);
+
+            using (var fileStream = new FileStream(filePath, FileMode.Open))
+            {
+                await UploadFileToStorage(fileStream, fileName);
+            }
 
             await _context.SaveChangesAsync();
 
@@ -111,15 +116,16 @@ namespace KatlaSport.Services.StaffManagement
                 throw new RequestedResourceNotFoundException();
             }
 
-            using (var stream = new FileStream(filePath, FileMode.Open))
-            {
-                updateRequest.DocumentData = new byte[stream.Length];
-                await stream.ReadAsync(updateRequest.DocumentData, 0, updateRequest.DocumentData.Length);
-            }
-
             var dbDocument = dbDocuments[0];
 
             Mapper.Map(updateRequest, dbDocument);
+
+            string fileName = dbDocument.Id + "_" + Path.GetFileName(filePath);
+
+            using (var fileStream = new FileStream(filePath, FileMode.Open))
+            {
+                await UploadFileToStorage(fileStream, fileName);
+            }
 
             await _context.SaveChangesAsync();
 
@@ -139,6 +145,29 @@ namespace KatlaSport.Services.StaffManagement
 
             _context.Documents.Remove(dbDocument);
             await _context.SaveChangesAsync();
+        }
+
+        private static async Task<bool> UploadFileToStorage(Stream fileStream, string fileName)
+        {
+            // Create storagecredentials object by reading the values from the configuration (appsettings.json)
+            StorageCredentials storageCredentials = new StorageCredentials(ConfigurationManager.AppSettings["StorageAccountName"], ConfigurationManager.AppSettings["StorageAccountKey"]);
+
+            // Create cloudstorage account by passing the storagecredentials
+            CloudStorageAccount storageAccount = new CloudStorageAccount(storageCredentials, true);
+
+            // Create the blob client.
+            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+            // Get reference to the blob container by passing the name by reading the value from the configuration (appsettings.json)
+            CloudBlobContainer container = blobClient.GetContainerReference(ConfigurationManager.AppSettings["BlobContainer"]);
+
+            // Get the reference to the block blob from the container
+            CloudBlockBlob blockBlob = container.GetBlockBlobReference(fileName);
+
+            // Upload the file
+            await blockBlob.UploadFromStreamAsync(fileStream);
+
+            return await Task.FromResult(true);
         }
     }
 }

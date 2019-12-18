@@ -1,12 +1,18 @@
 ﻿using System;
+using System.Configuration;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using KatlaSport.Services.StaffManagement;
 using KatlaSport.WebApi.CustomFilters;
 using Microsoft.Web.Http;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Auth;
+using Microsoft.WindowsAzure.Storage.Blob;
 using Swashbuckle.Swagger.Annotations;
 
 namespace KatlaSport.WebApi.Controllers
@@ -129,6 +135,41 @@ namespace KatlaSport.WebApi.Controllers
         {
             await _documentService.DeleteDocumentAsync(documentId);
             return ResponseMessage(Request.CreateResponse(HttpStatusCode.NoContent));
+        }
+
+        [HttpPost]
+        [Route("upload")]
+        public async Task<IHttpActionResult> Upload()
+        {
+            HttpRequest httpRequest = HttpContext.Current.Request;
+            HttpPostedFile postedFile = httpRequest.Files["UploadFile"];
+
+            await UploadFileToStorage(postedFile.InputStream, Path.GetFileName(postedFile.FileName));
+
+            return ResponseMessage(Request.CreateResponse(HttpStatusCode.Created));
+        }
+
+        private static async Task<bool> UploadFileToStorage(Stream fileStream, string fileName)
+        {
+            // Create storagecredentials object by reading the values from the configuration (appsettings.json)
+            StorageCredentials storageCredentials = new StorageCredentials(ConfigurationManager.AppSettings["StorageAccountName"], ConfigurationManager.AppSettings["StorageAccountKey"]);
+
+            // Create cloudstorage account by passing the storagecredentials
+            CloudStorageAccount storageAccount = new CloudStorageAccount(storageCredentials, true);
+
+            // Create the blob client.
+            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+            // Get reference to the blob container by passing the name by reading the value from the configuration (appsettings.json)
+            CloudBlobContainer container = blobClient.GetContainerReference(ConfigurationManager.AppSettings["BlobContainer"]);
+
+            // Get the reference to the block blob from the container
+            CloudBlockBlob blockBlob = container.GetBlockBlobReference(fileName);
+
+            // Upload the file
+            await blockBlob.UploadFromStreamAsync(fileStream);
+
+            return await Task.FromResult(true);
         }
     }
 }

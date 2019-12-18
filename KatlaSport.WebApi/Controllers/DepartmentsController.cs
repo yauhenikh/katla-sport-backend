@@ -53,7 +53,7 @@ namespace KatlaSport.WebApi.Controllers
         [SwaggerResponse(HttpStatusCode.OK, Description = "Returns a list of employees for specified department.", Type = typeof(EmployeeListItem[]))]
         [SwaggerResponse(HttpStatusCode.NotFound)]
         [SwaggerResponse(HttpStatusCode.InternalServerError)]
-        public async Task<IHttpActionResult> GetDepartments(int departmentId)
+        public async Task<IHttpActionResult> GetEmployees(int departmentId)
         {
             var employees = await _employeeService.GetDepartmentEmployeesAsync(departmentId);
             return Ok(employees);

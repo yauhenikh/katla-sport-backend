@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using System.Web.Http;
 using System.Web.Http.Cors;
 using KatlaSport.Services.StaffManagement;
 using KatlaSport.WebApi.CustomFilters;
+using Microsoft.ApplicationInsights;
 using Microsoft.Web.Http;
 using Swashbuckle.Swagger.Annotations;
 
@@ -18,6 +20,8 @@ namespace KatlaSport.WebApi.Controllers
     [SwaggerResponseRemoveDefaults]
     public class LocationsController : ApiController
     {
+        private readonly TelemetryClient _telemetry = new TelemetryClient();
+        
         private readonly ILocationRepository _locationRepository;
         private readonly IDepartmentService _departmentService;
 
@@ -34,6 +38,9 @@ namespace KatlaSport.WebApi.Controllers
         public async Task<IHttpActionResult> GetLocations()
         {
             var locations = await _locationRepository.GetLocationsAsync();
+
+            _telemetry.TrackEvent("GotLocations");
+
             return Ok(locations);
         }
 
@@ -45,6 +52,12 @@ namespace KatlaSport.WebApi.Controllers
         public async Task<IHttpActionResult> GetLocation(int locationId)
         {
             var location = await _locationRepository.GetLocationAsync(locationId);
+
+            var dictionary = new Dictionary<string, string>();
+            dictionary.Add("locationName", location.Name);
+
+            _telemetry.TrackEvent("GotLocation", dictionary);
+
             return Ok(location);
         }
 
@@ -56,6 +69,9 @@ namespace KatlaSport.WebApi.Controllers
         public async Task<IHttpActionResult> GetDepartments(int locationId)
         {
             var departments = await _departmentService.GetDepartmentsAsync(locationId);
+
+            _telemetry.TrackEvent("GotDepartments");
+
             return Ok(departments);
         }
 
@@ -74,6 +90,11 @@ namespace KatlaSport.WebApi.Controllers
 
             await _locationRepository.CreateLocationAsync(createRequest);
             await _locationRepository.SaveAsync();
+
+            var dictionary = new Dictionary<string, string>();
+            dictionary.Add("locationName", createRequest.Name);
+
+            _telemetry.TrackEvent("CreatedLocation", dictionary);
 
             return ResponseMessage(Request.CreateResponse(HttpStatusCode.Created));
         }
@@ -95,6 +116,11 @@ namespace KatlaSport.WebApi.Controllers
             await _locationRepository.UpdateLocationAsync(locationId, updateRequest);
             await _locationRepository.SaveAsync();
 
+            var dictionary = new Dictionary<string, string>();
+            dictionary.Add("locationName", updateRequest.Name);
+
+            _telemetry.TrackEvent("UpdatedLocation", dictionary);
+
             return ResponseMessage(Request.CreateResponse(HttpStatusCode.NoContent));
         }
 
@@ -109,6 +135,11 @@ namespace KatlaSport.WebApi.Controllers
         {
             await _locationRepository.DeleteLocationAsync(locationId);
             await _locationRepository.SaveAsync();
+
+            var dictionary = new Dictionary<string, string>();
+            dictionary.Add("locationId", locationId.ToString());
+
+            _telemetry.TrackEvent("DeletedLocation", dictionary);
 
             return ResponseMessage(Request.CreateResponse(HttpStatusCode.NoContent));
         }
